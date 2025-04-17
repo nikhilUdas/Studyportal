@@ -1,0 +1,70 @@
+{% extends 'dashboard/base.html' %} 
+{% load static %} 
+{% load crispy_forms_tags %} 
+
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Display Only Notes Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            {% if "Notes added" in message.message or "Note updated" in message.message or "Note deleted" in message.message %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        {% for note in notes %}
+        <div class="col-md-3 mb-3">
+            <a href="{% url 'notes-detail' note.id %}">
+                <div class="card">
+                    <div class="card-header">
+                        {{ note.title }}
+                    </div>
+                    <div class="card-body">
+                        {{ note.description|slice:"0:100" }}...
+                    </div>
+                    <div class="card-footer mt-auto text-right">
+                        <a href="{% url 'update-note' note.id %}" class="text-primary mr-3">
+                            <i class="fa fa-edit fa-2x"></i>
+                        </a>
+                        <a href="{% url 'delete-note' note.id %}" class="text-danger">  
+                            <i class="fa fa-trash fa-2x"></i>
+                        </a>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p>No notes found. Create one below!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<br><br>
+
+<!-- Form to Create Notes -->
+<div class="container">
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Create Notes</legend>
+        </fieldset>
+        {{ form|crispy }}
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit">
+                Create
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}
